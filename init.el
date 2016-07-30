@@ -27,7 +27,7 @@ values."
    ;; If non-nil layers with lazy install support are lazy installed.
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
-   dotspacemacs-configuration-layer-path '()
+   dotspacemacs-configuration-layer-path '("~/.spacemacs.d/layers/")
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
@@ -38,22 +38,30 @@ values."
      ;; ----------------------------------------------------------------
      ivy
      ;; helm
-     auto-completion
+     (auto-completion :variables
+                      auto-completion-enable-snippets-in-popup t
+                      auto-completion-enable-help-tooltip t)
      better-defaults
-     c-c++
+     ;; (c-c++ :variables
+     ;;       c-c++-enable-clang-support t
+     ;;       c-c++-default-mode-for-headers 'c++-mode)
      emacs-lisp
      git
      latex
      markdown
      ;; org
-     osx
-     (shell :variables
+     osx (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
      python
      spell-checking
      syntax-checking
      version-control
+     ;; Private layers
+     (c-c++-ide :variables
+                c-c++-ide-enable-clang-support t
+                c-c++-default-mode-for-headers 'c++-mode)
+     ddskk
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -244,7 +252,7 @@ values."
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
-   ;; If non-nil smartparens-strict-mode will be enabled in programming modes.
+  
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
    ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
@@ -291,6 +299,10 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  ;; In OSX, command -> meta, option -> super
+  (when (eq system-type 'darwin)
+    (setq ns-command-modifier (quote meta))
+    (setq ns-alternate-modifier (quote super)))
   ;; Increase history length
   (setq history-length 10000)
   ;; 行頭の空白を段落の区切りとして認識させる
@@ -298,25 +310,6 @@ you should place your code here."
 
   ;; C-h: delete-backward-char (<= help-for-help)
   (keyboard-translate ?\C-h ?\C-?)
-
-  ;; Setting DDSKK
-  (use-package skk-autoloads
-    :bind ( ;;("C-x C-j" . skk-mode)
-           ("C-x j" . skk-auto-fill-mode))
-    ;;(global-set-key "\C-xt" 'skk-tutorial)
-    :defines skk-init-file skk-isearch-start-mode
-    :config
-    (use-package skk-leim)
-    (setq default-input-method 'japanese-skk)
-    (setq skk-init-file (locate-user-emacs-file ".skk"))
-    (add-hook 'isearch-mode-hook
-              (lambda () (and (boundp 'skk-mode) skk-mode
-                              (skk-isearch-mode-setup))))
-    (add-hook 'isearch-mode-end-hook
-              (lambda ()
-                (and (featurep 'skk-isearch) (skk-isearch-mode-cleanup))))
-    (setq skk-isearch-start-mode 'latin)
-    )
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
