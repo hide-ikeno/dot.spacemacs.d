@@ -47,6 +47,7 @@ values."
      ;;       c-c++-default-mode-for-headers 'c++-mode)
      emacs-lisp
      git
+     ipython-notebook
      latex
      markdown
      ;; org
