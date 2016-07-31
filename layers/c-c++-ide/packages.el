@@ -79,7 +79,7 @@
       (add-hook 'c++-mode-hook 'irony-mode))
     :config
     (progn
-      (setq irony-user-dir (f-slash (f-join user-home-directory "bin" "irony")))
+      (setq irony-user-dir c-c++-ide-irony-user-dir)
       (setq irony-server-install-prefix irony-user-dir)
       (defun irony/irony-mode-hook ()
         (define-key irony-mode-map [remap completion-at-point] 'irony-completion-at-point-async)

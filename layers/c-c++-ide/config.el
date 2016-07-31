@@ -19,3 +19,6 @@
 
 (defvar c-c++-ide-default-mode-for-headers 'c-mode
   "Default mode to open header files. Can be `c-mode' or `c++-mode'.")
+
+(defvar c-c++-ide-irony-user-dir "~/bin/irony/"
+  "Default directory to install irony server.")
