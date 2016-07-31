@@ -1,0 +1,20 @@
+# name: class11
+# key: cls1
+# --
+class ${1:Name}
+{
+public:
+    // Defalut constructor
+    ${1:$(yas/substr yas-text "[^: ]*")}() ${1:$(make-string (+ 6 (string-width (yas/substr yas-text "[^: ]*"))) ?\ )} = default;
+    // Copy constructor
+    ${1:$(yas/substr yas-text "[^: ]*")}(const ${1:$(yas/substr yas-text "[^: ]*")}&) = default;
+    // Move constructor
+    ${1:$(yas/substr yas-text "[^: ]*")}(${1:$(yas/substr yas-text "[^: ]*")}&&)      = default;
+    // Destructor
+    ${2:~${1:$(yas/substr yas-text "[^: ]*")}()${1:$(make-string (+ 6 (string-width (yas/substr yas-text "[^: ]*"))) ?\ )} = default;}
+    // Copy assignment operator
+    ${1:$(yas/substr yas-text "[^: ]*")}& operator=(const ${1:$(yas/substr yas-text "[^: ]*")}&) = default;
+    // Copy assignment operator
+    ${1:$(yas/substr yas-text "[^: ]*")}& operator=(${1:$(yas/substr yas-text "[^: ]*")}&)       = default;
+};
+$0
