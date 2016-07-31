@@ -40,7 +40,8 @@ values."
      ;; helm
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t
-                      auto-completion-enable-help-tooltip t)
+                      auto-completion-enable-help-tooltip t
+                      auto-completion-private-snippets-directory "~/.spacemacs.d/snippets/")
      better-defaults
      ;; (c-c++ :variables
      ;;       c-c++-enable-clang-support t
@@ -59,20 +60,21 @@ values."
      syntax-checking
      themes-megapack
      version-control
+     yaml
+     ;;-----------------------------------------------------------------
      ;; Private layers
+     ;;-----------------------------------------------------------------
      (c-c++-ide :variables
                 c-c++-ide-enable-clang-support t
-                c-c++-default-mode-for-headers 'c++-mode)
+                c-c++-default-mode-for-headers 'c++-mode
+                c-c++-ide-irony-user-dir "~/.spacemacs.d/irony/")
      ddskk
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages
-   '(
-     ddskk
-     )
+   dotspacemacs-additional-packages '()
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be install and loaded.
