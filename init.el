@@ -74,7 +74,10 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages
+   '(
+     company-math
+     )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be install and loaded.
@@ -314,6 +317,35 @@ you should place your code here."
 
   ;; C-h: delete-backward-char (<= help-for-help)
   (keyboard-translate ?\C-h ?\C-?)
+
+  ;; company-math setting
+  (use-package company-math
+    :if (configuration-layer/package-usedp 'company)
+    :ensure company
+    :config
+    ;; global activation of the unicode symbol completion
+    (add-to-list 'company-backends 'company-math-symbols-unicode)
+    )
+
+  ;; cc-mode style
+  (defun my-c-mode-common-hook()
+    (c-set-style "stroustrup")
+    (setq-default fill-column 80)           ; 段落整形時の折り返しの文字数
+    (setq indent-tabs-mode nil)             ; Tabの代わりにスペースでインデント
+    (setq c-echo-syntactic-information-p t) ; インデント時に構文解析情報を表示する
+    (setq c-toggle-auto-state t)            ; 自動改行(auto-newline)を有効にする
+    (setq c-toggle-hungry-state t) ; 連続する空白の一括削除(hungry-delete)を有効にする
+    (setq c-toggle-hungry-state t) ; 連続する空白の一括削除(hungry-delete)を有効にする
+    (setq c-hanging-semi&comma-criteria nil) ; セミコロンで自動改行しない
+    (subword-mode 1)                         ; CamelCase
+    )
+  (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+
+  ;; markdown mode
+  (when (configuration-layer/package-usedp 'markdown)
+    (add-to-list 'auto-mode-alist '("\\.markdown\\'" . gfm-mode))
+    (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
+    )
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
