@@ -35,6 +35,7 @@
     (progn
       (require 'compile)
       (c-toggle-auto-newline 1)
+      (add-hook 'c++-mode-hook 'c-c++-ide-cc-mode--add-keywords-for-c++11())
       (spacemacs/set-leader-keys-for-major-mode 'c-mode
         "ga" 'projectile-find-other-file
         "gA" 'projectile-find-other-file-other-window)
@@ -55,7 +56,16 @@
 
 (defun c-c++-ide/init-clang-format ()
   (use-package clang-format
-    :if c-c++-ide-enable-clang-support))
+    :commands (clang-format-buffer)
+    :if c-c++-ide-enable-clang-support
+    :init
+    (defun clang-format-save-hook ()
+      "Run clang-format on save when in c or c++ mode."
+      (interactive)
+      (when (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
+        (clang-format-buffer)))
+    (add-hook 'before-save-hook 'clang-format-save-hook)
+    ))
 
 (defun c-c++-ide/init-cmake-ide ()
   (cmake-ide-setup))
