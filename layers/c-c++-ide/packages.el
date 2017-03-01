@@ -23,6 +23,7 @@
     flycheck
     flycheck-irony
     gdb-mi
+    modern-cpp-font-lock
     rtags
     ))
 
@@ -35,7 +36,7 @@
     (progn
       (require 'compile)
       (c-toggle-auto-newline 1)
-      (add-hook 'c++-mode-hook 'c-c++-ide-cc-mode--add-keywords-for-c++11())
+      ;; (add-hook 'c++-mode-hook 'c-c++-ide-cc-mode--add-keywords-for-c++11())
       (spacemacs/set-leader-keys-for-major-mode 'c-mode
         "ga" 'projectile-find-other-file
         "gA" 'projectile-find-other-file-other-window)
@@ -136,6 +137,13 @@
       :commands (flycheck-irony-setup)
       :defer t
       :init (add-hook 'irony-mode-hook 'flycheck-irony-setup))))
+
+(defun c-c++-ide/init-modern-cpp-font-lock ()
+  (use-package modern-cpp-font-lock
+    :defer t
+    :init
+    (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
+    ))
 
 (defun c-c++-ide/init-rtags ()
   (use-package rtags
