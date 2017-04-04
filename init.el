@@ -369,6 +369,9 @@ you should place your code here."
     (add-to-list 'auto-mode-alist '("\\.markdown\\'" . gfm-mode))
     (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
     )
+
+  ;; Automatically update preview if the file is updated
+  (add-hook 'doc-view-mode-hook 'auto-revert-mode)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
