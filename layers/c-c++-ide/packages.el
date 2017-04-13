@@ -22,9 +22,11 @@
     (company-irony-c-headers :toggle (configuration-layer/package-usedp 'company))
     flycheck
     flycheck-irony
+    flycheck-rtags
     gdb-mi
     modern-cpp-font-lock
     rtags
+    (ivy-rtags :toggle (configuration-layer/package-usedp 'ivy))
     ))
 
 (defun c-c++-ide/init-cc-mode ()
@@ -185,7 +187,20 @@
           "mgT" 'rtags-taglist
           "mgh" 'rtags-print-class-hierarchy
           "mga" 'rtags-print-source-arguments))
-      )))
+      ))
+  )
+
+(defun c-c++-ide/init-ivy-rtags ()
+  (use-package ivy-rtags
+    :if (and (configuration-layer/package-usedp 'ivy)
+             (configuration-layer/package-usedp 'rtags))
+    ))
+
+(defun c-c++-ide/init-flycheck-rtags ()
+  (use-package flycheck-rtags
+    :if (and (configuration-layer/package-usedp 'flycheck)
+             (configuration-layer/package-usedp 'rtags))
+  ))
 
 (defun c-c++-ide/init-gdb-mi ()
   (use-package gdb-mi
