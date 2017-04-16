@@ -37,14 +37,8 @@
     :config
     (progn
       (require 'compile)
-      (c-toggle-auto-newline 1)
-      ;; (add-hook 'c++-mode-hook 'c-c++-ide-cc-mode--add-keywords-for-c++11())
-      (spacemacs/set-leader-keys-for-major-mode 'c-mode
-        "ga" 'projectile-find-other-file
-        "gA" 'projectile-find-other-file-other-window)
-      (spacemacs/set-leader-keys-for-major-mode 'c++-mode
-        "ga" 'projectile-find-other-file
-        "gA" 'projectile-find-other-file-other-window))))
+      (c-toggle-auto-newline 1))
+    ))
 
 (defun c-c++-ide/init-disaster ()
   (use-package disaster
@@ -71,7 +65,9 @@
     ))
 
 (defun c-c++-ide/init-cmake-ide ()
-  (cmake-ide-setup))
+  (use-package cmake-ide
+    :config (cmake-ide-setup))
+  )
 
 (defun c-c++-ide/init-cmake-mode ()
   (use-package cmake-mode
@@ -156,51 +152,19 @@
       (add-hook 'c-mode-hook 'rtags-start-process-unless-running)
       (add-hook 'c++-mode-hook 'rtags-start-process-unless-running)
       (setq rtags-autostart-diagnostics t)
-      (dolist (mode '(c-mode c++-mode))
-        (evil-leader/set-key-for-mode mode
-          "mg." 'rtags-find-symbol-at-point
-          "mg," 'rtags-find-references-at-point
-          "mgv" 'rtags-find-virtuals-at-point
-          "mgV" 'rtags-print-enum-value-at-point
-          "mg/" 'rtags-find-all-references-at-point
-          "mgY" 'rtags-cycle-overlays-on-screen
-          "mg>" 'rtags-find-symbol
-          "mg<" 'rtags-find-references
-          "mg[" 'rtags-location-stack-back
-          "mg]" 'rtags-location-stack-forward
-          "mgD" 'rtags-diagnostics
-          "mgG" 'rtags-guess-function-at-point
-          "mgp" 'rtags-set-current-project
-          "mgP" 'rtags-print-dependencies
-          "mge" 'rtags-reparse-file
-          "mgE" 'rtags-preprocess-file
-          "mgR" 'rtags-rename-symbol
-          "mgM" 'rtags-symbol-info
-          "mgS" 'rtags-display-summary
-          "mgO" 'rtags-goto-offset
-          "mg;" 'rtags-find-file
-          "mgF" 'rtags-fixit
-          "mgL" 'rtags-copy-and-print-current-location
-          "mgX" 'rtags-fix-fixit-at-point
-          "mgB" 'rtags-show-rtags-buffer
-          "mgI" 'rtags-imenu
-          "mgT" 'rtags-taglist
-          "mgh" 'rtags-print-class-hierarchy
-          "mga" 'rtags-print-source-arguments))
       ))
   )
 
 (defun c-c++-ide/init-ivy-rtags ()
   (use-package ivy-rtags
-    :if (and (configuration-layer/package-usedp 'ivy)
-             (configuration-layer/package-usedp 'rtags))
-    ))
+    :if (configuration-layer/package-usedp 'ivy)
+    :ensure rtags)
+  )
 
 (defun c-c++-ide/init-flycheck-rtags ()
   (use-package flycheck-rtags
-    :if (and (configuration-layer/package-usedp 'flycheck)
-             (configuration-layer/package-usedp 'rtags))
-  ))
+    :ensure rtags)
+  )
 
 (defun c-c++-ide/init-gdb-mi ()
   (use-package gdb-mi
