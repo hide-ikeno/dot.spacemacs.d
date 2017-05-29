@@ -11,18 +11,13 @@
 
 (defun spacemacs//clang-format-on-save ()
   "Format buffers with ClangFormat when they get saved."
-  (when c-c++-enable-clang-format-on-save
+  (when c-c++-ide-enable-clang-format-on-save
     (clang-format-buffer)))
 
 (defun spacemacs/clang-format-on-save ()
   "Add auto-save hook for ClangFormat."
   (add-hook 'before-save-hook 'spacemacs//clang-format-on-save nil t))
 
-(defun spacemacs/company-more-than-prefix-guesser ()
-  (spacemacs/c-c++-load-clang-args)
-  (company-clang-guess-prefix))
-
-
 ;; realgud
 
 (defun spacemacs//short-key-state (modeon)
