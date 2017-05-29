@@ -11,14 +11,20 @@
 
 ;; variables
 
-(defvar c-c++-ide-enable-clang-support nil
-  "If non nil Clang related packages and configuration are enabled.")
+(defvar c-c++-ide-enable-clang-format-on-save nil
+  "If non-nil, automatically format code with ClangFormat on
+  save. Clang support has to be enabled for this to work.")
 
-(spacemacs|defvar-company-backends c-mode-common)
-(spacemacs|defvar-company-backends cmake-mode)
+(spacemacs|define-jump-handlers c++-mode)
+(spacemacs|define-jump-handlers c-mode)
 
 (defvar c-c++-ide-default-mode-for-headers 'c-mode
   "Default mode to open header files. Can be `c-mode' or `c++-mode'.")
 
-(defvar c-c++-ide-irony-user-dir "~/bin/irony/"
-  "Default directory to install irony server.")
+(defvar c-c++-ide-irony-user-dir (concat dotspacemacs-directory "irony/")
+  "Default parent directory to run cmake.")
+
+(defvar c-c++-ide-cmake-ide-build-pool-dir nil
+  "Default parent directory to run cmake.")
+
+(defvar c-c++-ide-cmake-ide-build-pool-use-persistent-naming nil)

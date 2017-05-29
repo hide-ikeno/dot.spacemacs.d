@@ -10,24 +10,25 @@
 ;;; License: GPLv3
 
 (setq c-c++-ide-packages
-  '(
-    cc-mode
-    disaster
-    clang-format
-    cmake-ide
-    cmake-mode
-    company
-    irony
-    (company-irony :toggle (configuration-layer/package-usedp 'company))
-    (company-irony-c-headers :toggle (configuration-layer/package-usedp 'company))
-    flycheck
-    flycheck-irony
-    flycheck-rtags
-    gdb-mi
-    modern-cpp-font-lock
-    rtags
-    (ivy-rtags :toggle (configuration-layer/package-usedp 'ivy))
-    ))
+      '(
+        cc-mode
+        disaster
+        clang-format
+        cmake-ide
+        cmake-mode
+        company
+        irony
+        (company-irony :toggle (configuration-layer/package-usedp 'company))
+        (company-irony-c-headers :toggle (configuration-layer/package-usedp 'company))
+        flycheck
+        flycheck-irony
+        flycheck-rtags
+        gdb-mi
+        modern-cpp-font-lock
+        realgud
+        rtags
+        (ivy-rtags :toggle (configuration-layer/package-usedp 'ivy))
+        ))
 
 (defun c-c++-ide/init-cc-mode ()
   (use-package cc-mode
@@ -38,7 +39,17 @@
     (progn
       (require 'compile)
       (c-toggle-auto-newline 1))
-    ))
+    :config
+    (progn
+      (require 'compile)
+      (c-toggle-auto-newline 1)
+      (spacemacs/set-leader-keys-for-major-mode 'c-mode
+        "ga" 'projectile-find-other-file
+        "gA" 'projectile-find-other-file-other-window)
+      (spacemacs/set-leader-keys-for-major-mode 'c++-mode
+        "ga" 'projectile-find-other-file
+        "gA" 'projectile-find-other-file-other-window)))
+  )
 
 (defun c-c++-ide/init-disaster ()
   (use-package disaster
@@ -51,82 +62,87 @@
       (spacemacs/set-leader-keys-for-major-mode 'c++-mode
         "D" 'disaster))))
 
+(defun c-c++-ide/init-gdb-mi ()
+  (use-package gdb-mi
+    :defer t
+    :init
+    (setq
+     ;; use gdb-many-windows by default when `M-x gdb'
+     gdb-many-windows t
+     ;; Non-nil means display source file containing the main routine at startup
+     gdb-show-main t)))
+
+(defun c-c++-ide/init-realgud()
+  (use-package realgud
+    :defer t
+    :commands (realgud:gdb)
+    :init
+    (progn
+      (dolist (mode '(c-mode c++-mode))
+        (spacemacs/set-leader-keys-for-major-mode mode
+          "dd" 'realgud:gdb
+          "de" 'realgud:cmd-eval-dwim))
+      (advice-add 'realgud-short-key-mode-setup
+                  :before #'spacemacs//short-key-state)
+      (evilified-state-evilify-map realgud:shortkey-mode-map
+        :eval-after-load realgud
+        :mode realgud-short-key-mode
+        :bindings
+        "s" 'realgud:cmd-next
+        "i" 'realgud:cmd-step
+        "b" 'realgud:cmd-break
+        "B" 'realgud:cmd-clear
+        "o" 'realgud:cmd-finish
+        "c" 'realgud:cmd-continue
+        "e" 'realgud:cmd-eval
+        "r" 'realgud:cmd-restart
+        "q" 'realgud:cmd-quit
+        "S" 'realgud-window-cmd-undisturb-src))))
+
 (defun c-c++-ide/init-clang-format ()
   (use-package clang-format
-    :commands (clang-format-buffer)
-    :if c-c++-ide-enable-clang-support
     :init
-    (defun clang-format-save-hook ()
-      "Run clang-format on save when in c or c++ mode."
-      (interactive)
-      (when (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
-        (clang-format-buffer)))
-    (add-hook 'before-save-hook 'clang-format-save-hook)
-    ))
-
-(defun c-c++-ide/init-cmake-ide ()
-  (use-package cmake-ide
-    :config (cmake-ide-setup))
-  )
+    (when c-c++-ide-enable-clang-format-on-save
+      (spacemacs/add-to-hooks 'spacemacs/clang-format-on-save
+                              '(c-mode-hook c++-mode-hook)))))
 
 (defun c-c++-ide/init-cmake-mode ()
   (use-package cmake-mode
-    :mode (("CMakeLists\\.txt\\'" . cmake-mode) ("\\.cmake\\'" . cmake-mode))
-    :init (push 'company-cmake company-backends-cmake-mode)))
+    :mode (("CMakeLists\\.txt\\'" . cmake-mode) ("\\.cmake\\'" . cmake-mode)))
+  )
 
-(defun c-c++-ide/post-init-company ()
-  (spacemacs|add-company-hook c-mode-common)
-  (spacemacs|add-company-hook cmake-mode))
+(defun c-c++-ide/init-company-c-headers ()
+  (use-package company-c-headers
+    :defer t
+    :init (spacemacs|add-company-backends
+            :backends company-c-headers
+            :modes c-mode-common)))
 
 (defun c-c++-ide/init-irony ()
-  (use-package irony
-    :defer t
-    :commands (irony-mode irony-install-server)
-    :init
-    (progn
-      (add-hook 'c-mode-hook 'irony-mode)
-      (add-hook 'c++-mode-hook 'irony-mode))
-    :config
-    (progn
-      (setq irony-user-dir c-c++-ide-irony-user-dir)
-      (setq irony-server-install-prefix irony-user-dir)
-      (defun irony/irony-mode-hook ()
-        (define-key irony-mode-map [remap completion-at-point] 'irony-completion-at-point-async)
-        (define-key irony-mode-map [remap complete-symbol] 'irony-completion-at-point-async))
+  (use-package irony))
 
-      (add-hook 'irony-mode-hook 'irony/irony-mode-hook)
-      (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))))
+(defun c-c++-ide/init-company-irony ()
+  (use-package company-irony))
 
-(when (configuration-layer/layer-usedp 'auto-completion)
-  (defun c-c++-ide/init-company-irony ()
-    (use-package company-irony
-      :if (configuration-layer/package-usedp 'company)
-      :ensure company
-      :commands (company-irony)
-      :defer t
-      :init
-      (progn
-        (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
-        (push 'company-irony company-backends-c-mode-common)))))
+(defun c-c++-ide/init-company-irony-c-headers ()
+  (use-package company-irony-c-headers))
 
-(when (configuration-layer/layer-usedp 'auto-completion)
-  (defun c-c++-ide/init-company-irony-c-headers ()
-    (use-package company-irony-c-headers
-      :if (configuration-layer/package-usedp 'company)
-      :defer t
-      :commands (company-irony-c-headers)
-      :init
-      (push 'company-irony-c-headers company-backends-c-mode-common))))
+(defun c-c++-ide/post-init-company ()
+  (when (configuration-layer/package-usedp 'cmake-mode)
+    (spacemacs|add-company-backends :backends company-cmake :modes cmake-mode))
+  (spacemacs|add-company-backends :backends company-irony-c-headers company-irony
+                                  :modes c-mode-common))
+
 
 (defun c-c++-ide/init-irony-eldoc ()
-  (use-package irony-eldoc
-    :commands (irony-eldoc)
-    :init
-    (add-hook 'irony-mode-hook 'irony-eldoc)))
+  (use-package irony-eldoc)
+  :commands (irony-eldoc)
+  :init
+  (add-hook 'irony-mode-hook 'irony-eldoc))
 
 (defun c-c++-ide/post-init-flycheck ()
   (dolist (mode '(c-mode c++-mode))
-    (spacemacs/add-flycheck-hook mode)))
+    (spacemacs/enable-flycheck mode)))
 
 (when (configuration-layer/layer-usedp 'syntax-checking)
   (defun c-c++-ide/init-flycheck-irony ()
@@ -166,13 +182,11 @@
     :ensure rtags)
   )
 
-(defun c-c++-ide/init-gdb-mi ()
-  (use-package gdb-mi
-    :defer t
-    :init
-    (setq
-     ;; use gdb-many-windows by default when `M-x gdb'
-     gdb-many-windows t
-     ;; Non-nil means display source file containing the main routine at startup
-     gdb-show-main t)))
+(defun c-c++-ide/init-cmake-ide ()
+  (use-package cmake-ide
+    :ensure rtags
+    :config
+    (setq cmake-ide-build-pool-dir c-c++-ide-cmake-ide-build-pool-dir)
+    (setq cmake-ide-build-pool-use-persistent-naming c-c++-ide-cmake-ide-build-pool-use-persistent-naming)
+    (cmake-ide-setup)))
 
