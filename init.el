@@ -55,7 +55,9 @@ values."
      osx (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
-     python
+     (python :variables
+             python-enable-yapf-format-on-save t
+             python-sort-imports-on-save t)
      spell-checking
      syntax-checking
      themes-megapack
