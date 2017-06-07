@@ -11,6 +11,7 @@ auto-save-list
 ac-comphist.dat
 helm-adaptive-history
 bookmarks
+custom.el
 irony
 tramp
 .emacs-places
@@ -21,3 +22,4 @@ tramp
 projectile*
 local/clang/stdafx.pch
 .DS_Store
+

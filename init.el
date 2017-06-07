@@ -280,7 +280,7 @@ values."
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.
    ;; (default '("ag" "pt" "ack" "grep"))
-   dotspacemacs-search-tools '("ag" "pt" "ack" "grep")
+   dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep")
    ;; The default package repository used if no explicit repository has been
    ;; specified with an installed package.
    ;; Not used for now. (default nil)
@@ -300,10 +300,14 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+
+  (add-to-list 'load-path (expand-file-name "config" dotspacemacs-directory))
+
   (setq custom-file (file-truename (concat dotspacemacs-directory "custom.el")))
   (if (file-exists-p custom-file)
     (load custom-file))
   )
+
 
 
 (defun dotspacemacs/user-config ()
@@ -394,6 +398,10 @@ you should place your code here."
 
   ;; Automatically update preview if the file is updated
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+
+  ;; org-mode
+  (require 'init-org)
+
   )
 
 ;; Do not write anything past this comment. This is where Emacs will

@@ -119,7 +119,8 @@
             :modes c-mode-common)))
 
 (defun c-c++-ide/init-irony ()
-  (use-package irony))
+  (use-package irony
+    :config (setq irony-user-dir c-c++-ide-irony-user-dir)))
 
 (defun c-c++-ide/init-company-irony ()
   (use-package company-irony))
