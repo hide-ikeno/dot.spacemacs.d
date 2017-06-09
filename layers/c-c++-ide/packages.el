@@ -120,7 +120,8 @@
 
 (defun c-c++-ide/init-irony ()
   (use-package irony
-    :config (setq irony-user-dir c-c++-ide-irony-user-dir)))
+    :config (setq irony-user-dir c-c++-ide-irony-user-dir
+                  irony-server-install-prefix c-c++-ide-irony-user-dir)))
 
 (defun c-c++-ide/init-company-irony ()
   (use-package company-irony))
