@@ -65,6 +65,7 @@
       (spacemacs/set-leader-keys-for-major-mode mode
         "D" 'disaster)
       )))
+  )
 
 (defun c-c++-ide/init-clang-format ()
   (use-package clang-format
@@ -72,7 +73,7 @@
     :init
     (when c-c++-ide-enable-clang-format-on-save
       (spacemacs/add-to-hooks 'spacemacs/clang-format-on-save
-                              c-c++-mode-hooks)))))
+                              c-c++-mode-hooks))))
 
 (defun c-c++-ide/init-cmake-ide ()
   (use-package cmake-ide
@@ -175,20 +176,18 @@
   (spacemacs|add-company-backends :backends company-irony-c-headers company-irony
                                   :modes company-backend-c-mode-common))
 
-
 (defun c-c++-ide/init-irony-eldoc ()
   (use-package irony-eldoc)
   :commands (irony-eldoc)
   :init
   (add-hook 'irony-mode-hook 'irony-eldoc))
 
-(when (configuration-layer/layer-usedp 'syntax-checking)
-  (defun c-c++-ide/init-flycheck-irony ()
-    (use-package flycheck-irony
-      :if (configuration-layer/package-usedp 'flycheck)
-      :commands (flycheck-irony-setup)
-      :defer t
-      :init (add-hook 'irony-mode-hook 'flycheck-irony-setup))))
+(defun c-c++-ide/init-flycheck-irony ()
+  (use-package flycheck-irony
+    :if (configuration-layer/package-usedp 'flycheck)
+    :commands (flycheck-irony-setup)
+    :defer t
+    :init (add-hook 'irony-mode-hook 'flycheck-irony-setup)))
 
 (defun c-c++-ide/init-modern-cpp-font-lock ()
   (use-package modern-cpp-font-lock
@@ -209,11 +208,9 @@
     :init
     (spacemacs|add-company-backends :backends company-rtags
                                     :modes company-backends-c-mode-common)
-    (add-hook 'c-mode-common-hook 'rtags-start-process-unless-running))
-  )
-
-(defun c-c++-ide/init-flycheck-rtags ()
+    (add-hook 'c-mod512e-common-hook 'rtags-start-process-unless-running))
   (use-package flycheck-rtags
     :ensure rtags)
   )
+
 
