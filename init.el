@@ -51,7 +51,7 @@ values."
      ipython-notebook
      latex
      markdown
-     (org :variables 
+     (org :variables
             org-enable-github-support t
             org-projectile-file "TODO.org")
      osx (shell :variables
@@ -70,6 +70,7 @@ values."
      ;;-----------------------------------------------------------------
      (c-c++-ide :variables
                 c-c++-ide-default-mode-for-headers 'c++-mode
+                c-c++-ide-enable-clang-support t
                 c-c++-ide-enable-clang-format-on-save t
                 c-c++-ide-cmake-ide-build-pool-dir "~/.cache/cmake-ide"
                 c-c++-ide-cmake-ide-build-pool-use-persistent-naming t)

@@ -13,7 +13,7 @@
       '(
         cc-mode
         disaster
-        clang-format
+        (clang-format :toggle c-c++-ide-enable-clang-support)
         cmake-ide
         cmake-mode
         company
@@ -28,6 +28,9 @@
         realgud
         rtags
         (ivy-rtags :toggle (configuration-layer/package-usedp 'ivy))
+        semantic
+        srefactor
+        stickyfunc-enhance
         ))
 
 (defun c-c++-ide/init-cc-mode ()
@@ -43,13 +46,14 @@
     (progn
       (require 'compile)
       (c-toggle-auto-newline 1)
-      (spacemacs/set-leader-keys-for-major-mode 'c-mode
-        "ga" 'projectile-find-other-file
-        "gA" 'projectile-find-other-file-other-window)
-      (spacemacs/set-leader-keys-for-major-mode 'c++-mode
-        "ga" 'projectile-find-other-file
-        "gA" 'projectile-find-other-file-other-window)))
-  )
+      (dolist (mode c-c++-modes)
+        (spacemacs/declare-prefix-for-mode mode "mc" "compile")
+        (spacemacs/declare-prefix-for-mode mode "mg" "goto")
+        (spacemacs/declare-prefix-for-mode mode "mp" "project")
+        (spacemacs/set-leader-keys-for-major-mode mode
+          "ga" 'projectile-find-other-file
+          "gA" 'projectile-find-other-file-other-window)))
+    ))
 
 (defun c-c++-ide/init-disaster ()
   (use-package disaster
@@ -57,10 +61,54 @@
     :commands (disaster)
     :init
     (progn
-      (spacemacs/set-leader-keys-for-major-mode 'c-mode
+      (dolist (mode c-c++-modes)
+      (spacemacs/set-leader-keys-for-major-mode mode
         "D" 'disaster)
-      (spacemacs/set-leader-keys-for-major-mode 'c++-mode
-        "D" 'disaster))))
+      )))
+
+(defun c-c++-ide/init-clang-format ()
+  (use-package clang-format
+    :if c-c++-ide-enable-clang-support
+    :init
+    (when c-c++-ide-enable-clang-format-on-save
+      (spacemacs/add-to-hooks 'spacemacs/clang-format-on-save
+                              c-c++-mode-hooks)))))
+
+(defun c-c++-ide/init-cmake-ide ()
+  (use-package cmake-ide
+    :config
+    (setq cmake-ide-build-pool-dir c-c++-ide-cmake-ide-build-pool-dir)
+    (setq cmake-ide-build-pool-use-persistent-naming c-c++-ide-cmake-ide-build-pool-use-persistent-naming)
+    (progn
+      (cmake-ide-setup)
+      (dolist (mode c-c++-modes)
+        (spacemacs/set-leader-keys-for-major-mode mode
+          "cc" 'cmake-ide-compile
+          "pc" 'cmake-ide-run-cmake
+          "pC" 'cmake-ide-maybe-run-cmake
+          "pd" 'cmake-ide-delete-file)))
+    ))
+
+(defun c-c++-ide/init-cmake-mode ()
+  (use-package cmake-mode
+    :mode (("CMakeLists\\.txt\\'" . cmake-mode) ("\\.cmake\\'" . cmake-mode)))
+  )
+
+(defun c-c++-ide/post-init-company ()
+  (when (configuration-layer/package-used-p 'cmake-mode)
+    (spacemacs|add-company-backends :backends company-cmake :modes cmake-mode))
+  )
+
+(defun c-c++-ide/init-company-c-headers ()
+  (use-package company-c-headers
+    :defer t
+    :init (spacemacs|add-company-backends
+            :backends company-c-headers
+            :modes c-mode-common)))
+
+(defun c-c++/post-init-flycheck ()
+  (dolist (mode c-c++-modes)
+    (spacemacs/enable-flycheck mode)))
 
 (defun c-c++-ide/init-gdb-mi ()
   (use-package gdb-mi
@@ -99,24 +147,16 @@
         "q" 'realgud:cmd-quit
         "S" 'realgud-window-cmd-undisturb-src))))
 
-(defun c-c++-ide/init-clang-format ()
-  (use-package clang-format
-    :init
-    (when c-c++-ide-enable-clang-format-on-save
-      (spacemacs/add-to-hooks 'spacemacs/clang-format-on-save
-                              '(c-mode-hook c++-mode-hook)))))
+(defun c-c++-ide/post-init-semantic ()
+  (spacemacs/add-to-hooks 'semantic-mode c-c++-mode-hooks))
 
-(defun c-c++-ide/init-cmake-mode ()
-  (use-package cmake-mode
-    :mode (("CMakeLists\\.txt\\'" . cmake-mode) ("\\.cmake\\'" . cmake-mode)))
-  )
+(defun c-c++-ide/post-init-srefactor ()
+  (dolist (mode c-c++-modes)
+    (spacemacs/set-leader-keys-for-major-mode mode "r" 'srefactor-refactor-at-point))
+  (spacemacs/add-to-hooks 'spacemacs/lazy-load-srefactor c-c++-mode-hooks))
 
-(defun c-c++-ide/init-company-c-headers ()
-  (use-package company-c-headers
-    :defer t
-    :init (spacemacs|add-company-backends
-            :backends company-c-headers
-            :modes c-mode-common)))
+(defun c-c++-ide/post-init-stickyfunc-enhance ()
+  (spacemacs/add-to-hooks 'spacemacs/lazy-load-stickyfunc-enhance c-c++-mode-hooks))
 
 (defun c-c++-ide/init-irony ()
   (use-package irony
@@ -133,7 +173,7 @@
   (when (configuration-layer/package-usedp 'cmake-mode)
     (spacemacs|add-company-backends :backends company-cmake :modes cmake-mode))
   (spacemacs|add-company-backends :backends company-irony-c-headers company-irony
-                                  :modes c-mode-common))
+                                  :modes company-backend-c-mode-common))
 
 
 (defun c-c++-ide/init-irony-eldoc ()
@@ -141,10 +181,6 @@
   :commands (irony-eldoc)
   :init
   (add-hook 'irony-mode-hook 'irony-eldoc))
-
-(defun c-c++-ide/post-init-flycheck ()
-  (dolist (mode '(c-mode c++-mode))
-    (spacemacs/enable-flycheck mode)))
 
 (when (configuration-layer/layer-usedp 'syntax-checking)
   (defun c-c++-ide/init-flycheck-irony ()
@@ -164,31 +200,20 @@
 (defun c-c++-ide/init-rtags ()
   (use-package rtags
     :defer t
+    :config
+    (setq rtags-autostart-diagnostics t)
+    (if (configuration-layer/package-usedp 'ivy)
+        (setq rtags-display-result-backend 'ivy))
+          ;; rtags-completions-enabled t
+          ;; rtags-use-helm t)
     :init
-    (progn
-      (require 'rtags)
-      (add-hook 'c-mode-hook 'rtags-start-process-unless-running)
-      (add-hook 'c++-mode-hook 'rtags-start-process-unless-running)
-      (setq rtags-autostart-diagnostics t)
-      ))
-  )
-
-(defun c-c++-ide/init-ivy-rtags ()
-  (use-package ivy-rtags
-    :if (configuration-layer/package-usedp 'ivy)
-    :ensure rtags)
+    (spacemacs|add-company-backends :backends company-rtags
+                                    :modes company-backends-c-mode-common)
+    (add-hook 'c-mode-common-hook 'rtags-start-process-unless-running))
   )
 
 (defun c-c++-ide/init-flycheck-rtags ()
   (use-package flycheck-rtags
     :ensure rtags)
   )
-
-(defun c-c++-ide/init-cmake-ide ()
-  (use-package cmake-ide
-    :ensure rtags
-    :config
-    (setq cmake-ide-build-pool-dir c-c++-ide-cmake-ide-build-pool-dir)
-    (setq cmake-ide-build-pool-use-persistent-naming c-c++-ide-cmake-ide-build-pool-use-persistent-naming)
-    (cmake-ide-setup)))
 

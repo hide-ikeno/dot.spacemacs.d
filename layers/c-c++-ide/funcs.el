@@ -9,6 +9,7 @@
 ;;
 ;;; License: GPLv3
 
+;; clang-format
 (defun spacemacs//clang-format-on-save ()
   "Format buffers with ClangFormat when they get saved."
   (when c-c++-ide-enable-clang-format-on-save
@@ -20,6 +21,13 @@
 
 ;; realgud
 
+(defun spacemacs//short-key-state (modeon)
+  "Set evil-evilified-state explicitly."
+  (if modeon
+      (evil-evilified-state)
+    (evil-normal-state)))
+
+;; realgud
 (defun spacemacs//short-key-state (modeon)
   "Set evil-evilified-state explicitly."
   (if modeon
