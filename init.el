@@ -58,7 +58,9 @@ values."
             shell-default-height 30
             shell-default-position 'bottom)
      (python :variables
+             ;; enable automatic buffer formatting on save with YAPF
              python-enable-yapf-format-on-save t
+             ;; sort imports automatically on save using isort
              python-sort-imports-on-save t)
      rust
      spell-checking

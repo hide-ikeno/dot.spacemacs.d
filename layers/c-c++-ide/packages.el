@@ -211,6 +211,8 @@
     (add-hook 'c-mod512e-common-hook 'rtags-start-process-unless-running))
   (use-package flycheck-rtags
     :ensure rtags)
+  (use-package ivy-rtags
+    :ensure rtags)
   )
 
 
