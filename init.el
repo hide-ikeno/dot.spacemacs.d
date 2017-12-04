@@ -62,7 +62,7 @@ values."
              python-sort-imports-on-save t)
      rust
      spell-checking
-     syntax-checking
+     (syntax-checking :variables syntax-checking-enable-by-default t)
      themes-megapack
      version-control
      yaml
