@@ -20,7 +20,7 @@
         irony
         (company-irony :toggle (configuration-layer/package-usedp 'company))
         (company-irony-c-headers :toggle (configuration-layer/package-usedp 'company))
-        flycheck
+        ;; flycheck
         flycheck-irony
         flycheck-rtags
         gdb-mi
@@ -209,10 +209,10 @@
     (spacemacs|add-company-backends :backends company-rtags
                                     :modes company-backends-c-mode-common)
     (add-hook 'c-mod512e-common-hook 'rtags-start-process-unless-running))
-  (use-package flycheck-rtags
-    :ensure rtags)
-  (use-package ivy-rtags
-    :ensure rtags)
   )
 
+(defun c-c++-ide/init-flycheck-rtags ()
+  (use-package flycheck-rtags :ensure rtags))
 
+(defun c-c++-ide/init-ivy-rtags ()
+  (use-package ivy-rtags :ensure rtags))
