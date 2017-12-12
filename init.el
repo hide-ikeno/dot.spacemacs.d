@@ -57,6 +57,7 @@ values."
      osx (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
+     plantuml
      (python :variables
              ;; enable automatic buffer formatting on save with YAPF
              python-enable-yapf-format-on-save t
